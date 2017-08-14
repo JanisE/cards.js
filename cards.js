@@ -34,24 +34,26 @@ var cards = (function() {
 		}
 		var start = opt.acesHigh ? 2 : 1;
 		var end = start + 12;
-		opt.table = $(opt.table)[0];
-		if ($(opt.table).css('position') == 'static') {
-			$(opt.table).css('position', 'relative');
+
+		opt.table = $(opt.table);
+
+		if (opt.table.css('position') == 'static') {
+			opt.table.css('position', 'relative');
 		}
 		for (var i = start; i <= end; i++) {
-			all.push(new Card('h', i, opt.table));
-			all.push(new Card('s', i, opt.table));
-			all.push(new Card('d', i, opt.table));
-			all.push(new Card('c', i, opt.table));
+			all.push(new Card('h', i));
+			all.push(new Card('s', i));
+			all.push(new Card('d', i));
+			all.push(new Card('c', i));
 		}
 		if (opt.blackJoker) {
-			all.push(new Card('bj', 0, opt.table));
+			all.push(new Card('bj', 0));
 		}
 		if (opt.redJoker) {
-			all.push(new Card('rj', 0, opt.table));
+			all.push(new Card('rj', 0));
 		}
-		
-		$('.card').click(mouseEvent);
+
+		opt.table.on('click', '.card', mouseEvent);
 		shuffle(all);
 	}
 
@@ -67,13 +69,13 @@ var cards = (function() {
             deck[j] = tempi;
         }
     }
-	
-	function Card(suit, rank, table) {
-		this.init(suit, rank, table);
+
+	function Card(suit, rank) {
+		this.init(suit, rank);
 	}
 	
 	Card.prototype = {
-		init: function (suit, rank, table) {
+		init: function (suit, rank) {
 			this.shortName = suit + rank;
 			this.suit = suit;
 			this.rank = rank;
@@ -85,7 +87,7 @@ var cards = (function() {
 				"background-image":'url('+ opt.cardsUrl + ')',
 				position:'absolute',
 				cursor:'pointer'	
-			}).addClass('card').data('card', this).appendTo($(table));
+			}).addClass('card').data('card', this);
 			this.showCard();
 			this.moveToFront();
 		},
@@ -155,6 +157,7 @@ var cards = (function() {
 				}
 				this.push(card);
 				card.container = this;
+				card.el.appendTo(opt.table);
 			}
 		},
 		
@@ -162,6 +165,7 @@ var cards = (function() {
 			for (var i=0; i< this.length;i++) {
 				if (this[i] == card) {
 					this.splice(i, 1);
+					card.el.detach();
 					return true;
 				}
 			}
